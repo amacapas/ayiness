@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>GitHired</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              gh: {
+                bg: '#0d1117',
+                card: '#161b22',
+                border: '#30363d',
+                text: '#c9d1d9',
+                muted: '#8b949e',
+                blue: '#58a6ff',
+                green: '#238636',
+                greenHover: '#2ea043',
+                header: '#010409'
+              }
+            },
+            fontFamily: {
+              sans: ['-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Helvetica', 'Arial', 'sans-serif'],
+              mono: ['ui-monospace', 'SFMono-Regular', 'SF Mono', 'Menlo', 'Consolas', 'Liberation Mono', 'monospace']
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      body {
+        background-color: #0d1117;
+        color: #c9d1d9;
+      }
+      /* Custom Scrollbar for GitHub feel */
+      ::-webkit-scrollbar {
+        width: 12px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #0d1117; 
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #30363d; 
+        border-radius: 6px;
+        border: 3px solid #0d1117;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #8b949e; 
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react-router-dom": "https://esm.sh/react-router-dom@^7.12.0",
+    "firebase/": "https://esm.sh/firebase@^12.8.0/",
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "react": "https://esm.sh/react@^19.2.3",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "lucide-react": "https://esm.sh/lucide-react@^0.562.0",
+    "@google/genai": "https://esm.sh/@google/genai@^1.37.0",
+    "@dnd-kit/sortable": "https://esm.sh/@dnd-kit/sortable@^10.0.0",
+    "@dnd-kit/utilities": "https://esm.sh/@dnd-kit/utilities@^3.2.2",
+    "@dnd-kit/core": "https://esm.sh/@dnd-kit/core@^6.3.1"
+  }
+}
+</script>
+</head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
