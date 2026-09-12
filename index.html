@@ -1,74 +1,578 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="en" data-theme="light">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>GitHired</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              gh: {
-                bg: '#0d1117',
-                card: '#161b22',
-                border: '#30363d',
-                text: '#c9d1d9',
-                muted: '#8b949e',
-                blue: '#58a6ff',
-                green: '#238636',
-                greenHover: '#2ea043',
-                header: '#010409'
-              }
-            },
-            fontFamily: {
-              sans: ['-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Helvetica', 'Arial', 'sans-serif'],
-              mono: ['ui-monospace', 'SFMono-Regular', 'SF Mono', 'Menlo', 'Consolas', 'Liberation Mono', 'monospace']
-            }
-          }
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ayiness — cover letters, grounded in your resume</title>
+    <meta
+      name="description"
+      content="ai ness generates cover letters from your actual resume and the job description. No fabricated claims."
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      :root {
+        --bg: #fafafa;
+        --text: #111111;
+        --text-soft: #555555;
+        --text-faint: #999999;
+        --border: #e6e6e6;
+        --btn-primary-bg: #0a0a0a;
+        --btn-primary-text: #ffffff;
+        --btn-primary-hover-bg: #222222;
+        --btn-ghost-border: #e6e6e6;
+        --btn-ghost-hover-bg: #f0f0f0;
+        --btn-ghost-hover-border: #bbbbbb;
+        --btn-ghost-color: #555555;
+        --btn-google-bg: #ffffff;
+        --btn-google-border: #dadce0;
+        --btn-google-hover-bg: #f8f9fa;
+        --btn-google-hover-border: #c4c7c9;
+        --footer-color: #999999;
+        --toggle-border: #dddddd;
+        --toggle-hover-bg: #eeeeee;
+        --toggle-active-bg: #e0e0e0;
+        --font:
+          "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        --mono:
+          "JetBrains Mono", "SF Mono", "Cascadia Code", "Consolas", monospace;
+      }
+
+      [data-theme="dark"] {
+        --bg: #111111;
+        --text: #e6e6e6;
+        --text-soft: #999999;
+        --text-faint: #555555;
+        --border: #2a2a2a;
+        --btn-primary-bg: #f0f0f0;
+        --btn-primary-text: #111111;
+        --btn-primary-hover-bg: #ffffff;
+        --btn-ghost-border: #333333;
+        --btn-ghost-hover-bg: #1e1e1e;
+        --btn-ghost-hover-border: #444444;
+        --btn-ghost-color: #aaaaaa;
+        --btn-google-bg: #1a1a1a;
+        --btn-google-border: #333333;
+        --btn-google-hover-bg: #222222;
+        --btn-google-hover-border: #3d3d3d;
+        --footer-color: #555555;
+        --toggle-border: #333333;
+        --toggle-hover-bg: #1a1a1a;
+        --toggle-active-bg: #222222;
+      }
+
+      html,
+      body {
+        height: 100%;
+        overflow: hidden;
+      }
+
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font);
+        font-size: 16px;
+        line-height: 1.55;
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        transition:
+          background-color 0.3s ease,
+          color 0.3s ease;
+      }
+
+      /* ── Background animation ── */
+      .bg-canvas {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        overflow: hidden;
+      }
+      .bg-canvas canvas {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+
+      /* ── Theme toggle ── */
+      .theme-toggle {
+        position: fixed;
+        top: 18px;
+        right: 20px;
+        z-index: 10;
+        background: transparent;
+        border: 1px solid var(--toggle-border);
+        border-radius: 999px;
+        padding: 6px 12px;
+        font-family: var(--mono);
+        font-size: 11.5px;
+        color: var(--text-soft);
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        line-height: 1;
+        letter-spacing: 0.02em;
+      }
+      .theme-toggle:hover {
+        background: var(--toggle-hover-bg);
+        border-color: var(--text-faint);
+        color: var(--text);
+      }
+      .theme-toggle .icon {
+        font-size: 13px;
+        line-height: 1;
+      }
+      .theme-toggle .label {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+      [data-theme="dark"] .theme-toggle .label-light {
+        display: none;
+      }
+      [data-theme="dark"] .theme-toggle .label-dark {
+        display: inline;
+      }
+      .theme-toggle .label-dark {
+        display: none;
+      }
+
+      /* ── Content layer ── */
+      .content {
+        position: relative;
+        z-index: 1;
+        text-align: center;
+        max-width: 520px;
+        padding: 0 24px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 14px;
+      }
+
+      .brand {
+        font-family: var(--mono);
+        font-size: 13px;
+        letter-spacing: 0.04em;
+        color: var(--text-faint);
+        margin-bottom: 8px;
+        transition: color 0.3s ease;
+      }
+      .brand .dot {
+        color: var(--text-faint);
+        opacity: 0.5;
+        transition: color 0.3s ease;
+      }
+
+      h1 {
+        font-size: clamp(2rem, 4.5vw, 3rem);
+        font-weight: 700;
+        line-height: 1.12;
+        letter-spacing: -0.03em;
+        color: var(--text);
+        margin-bottom: 6px;
+        transition: color 0.3s ease;
+      }
+      h1 em {
+        font-style: italic;
+        font-weight: 500;
+        color: var(--text-soft);
+        letter-spacing: -0.01em;
+        transition: color 0.3s ease;
+      }
+
+      .sub {
+        font-size: 15px;
+        color: var(--text-soft);
+        max-width: 400px;
+        line-height: 1.55;
+        margin-bottom: 4px;
+        transition: color 0.3s ease;
+      }
+
+      .actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 6px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 10px 20px;
+        border-radius: 999px;
+        font-size: 14px;
+        font-weight: 600;
+        font-family: var(--font);
+        cursor: pointer;
+        transition: all 0.18s ease;
+        border: 1.5px solid transparent;
+        white-space: nowrap;
+        background: transparent;
+        color: var(--text);
+      }
+      .btn-primary {
+        background: var(--btn-primary-bg);
+        color: var(--btn-primary-text);
+        border-color: var(--btn-primary-bg);
+      }
+      .btn-primary:hover {
+        background: var(--btn-primary-hover-bg);
+        border-color: var(--btn-primary-hover-bg);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.09);
+      }
+      [data-theme="dark"] .btn-primary:hover {
+        box-shadow: 0 4px 14px rgba(255, 255, 255, 0.08);
+      }
+      .btn-ghost {
+        border-color: var(--btn-ghost-border);
+        color: var(--btn-ghost-color);
+      }
+      .btn-ghost:hover {
+        background: var(--btn-ghost-hover-bg);
+        border-color: var(--btn-ghost-hover-border);
+        color: var(--text);
+      }
+      .btn-google {
+        background: var(--btn-google-bg);
+        color: var(--text);
+        border-color: var(--btn-google-border);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      }
+      .btn-google:hover {
+        background: var(--btn-google-hover-bg);
+        border-color: var(--btn-google-hover-border);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.07);
+      }
+      [data-theme="dark"] .btn-google {
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+      }
+
+      .trust {
+        font-size: 12.5px;
+        color: var(--text-faint);
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-top: 2px;
+        transition: color 0.3s ease;
+      }
+      .trust span {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .trust .ok {
+        color: var(--text-faint);
+        font-size: 11px;
+        transition: color 0.3s ease;
+      }
+
+      .footer {
+        position: fixed;
+        bottom: 18px;
+        left: 0;
+        right: 0;
+        text-align: center;
+        font-size: 11.5px;
+        color: var(--footer-color);
+        font-family: var(--mono);
+        z-index: 1;
+        letter-spacing: 0.02em;
+        transition: color 0.3s ease;
+      }
+
+      ::selection {
+        background: var(--btn-primary-bg);
+        color: var(--btn-primary-text);
+      }
+
+      /* ── Responsive ── */
+      @media (max-width: 480px) {
+        .content {
+          max-width: 94%;
+          padding: 0 16px;
+        }
+        h1 {
+          font-size: 1.9rem;
+        }
+        .sub {
+          font-size: 14px;
+        }
+        .actions {
+          flex-direction: column;
+          align-items: center;
+        }
+        .btn {
+          width: 100%;
+          max-width: 260px;
+        }
+        .footer {
+          bottom: 12px;
+          font-size: 10.5px;
+        }
+        .theme-toggle {
+          top: 12px;
+          right: 14px;
+          padding: 5px 10px;
+          font-size: 10.5px;
+        }
+        .theme-toggle .label {
+          font-size: 10px;
         }
       }
-    </script>
-    <style>
-      body {
-        background-color: #0d1117;
-        color: #c9d1d9;
-      }
-      /* Custom Scrollbar for GitHub feel */
-      ::-webkit-scrollbar {
-        width: 12px;
-      }
-      ::-webkit-scrollbar-track {
-        background: #0d1117; 
-      }
-      ::-webkit-scrollbar-thumb {
-        background: #30363d; 
-        border-radius: 6px;
-        border: 3px solid #0d1117;
-      }
-      ::-webkit-scrollbar-thumb:hover {
-        background: #8b949e; 
-      }
     </style>
-  <script type="importmap">
-{
-  "imports": {
-    "react-router-dom": "https://esm.sh/react-router-dom@^7.12.0",
-    "firebase/": "https://esm.sh/firebase@^12.8.0/",
-    "react/": "https://esm.sh/react@^19.2.3/",
-    "react": "https://esm.sh/react@^19.2.3",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
-    "lucide-react": "https://esm.sh/lucide-react@^0.562.0",
-    "@google/genai": "https://esm.sh/@google/genai@^1.37.0",
-    "@dnd-kit/sortable": "https://esm.sh/@dnd-kit/sortable@^10.0.0",
-    "@dnd-kit/utilities": "https://esm.sh/@dnd-kit/utilities@^3.2.2",
-    "@dnd-kit/core": "https://esm.sh/@dnd-kit/core@^6.3.1"
-  }
-}
-</script>
-</head>
+  </head>
   <body>
-    <div id="root"></div>
+    <div class="bg-canvas" aria-hidden="true">
+      <canvas id="bgCanvas"></canvas>
+    </div>
+
+    <button
+      class="theme-toggle"
+      id="themeToggle"
+      aria-label="Toggle dark mode"
+      title="Toggle theme"
+    >
+      <span class="icon">☀</span>
+      <span class="label label-light">Light</span>
+      <span class="label label-dark">Dark</span>
+    </button>
+
+    <div class="content">
+      <div class="brand">ayiness<span class="dot">.com</span></div>
+      <h1>
+        Cover letters that <em>fit the job.</em><br />
+        Grounded in your resume.
+      </h1>
+      <p class="sub">
+        Upload your resume, paste the job description, and get a letter that
+        maps your real experience to what they're asking for. No filler. No
+        invented claims. Editable in seconds.
+      </p>
+    </div>
+
+    <div class="footer">&copy; 2026 ayiness &middot; Built with Gemini</div>
+
+    <script>
+      (function () {
+        const canvas = document.getElementById("bgCanvas");
+        const ctx = canvas.getContext("2d");
+        const root = document.documentElement;
+        const toggle = document.getElementById("themeToggle");
+        let w,
+          h,
+          blobs = [],
+          raf = null;
+
+        function isDark() {
+          return root.getAttribute("data-theme") === "dark";
+        }
+
+        function applyTheme(dark) {
+          root.setAttribute("data-theme", dark ? "dark" : "light");
+          try {
+            localStorage.setItem("ayiness-theme", dark ? "dark" : "light");
+          } catch (e) {}
+          const icon = toggle.querySelector(".icon");
+          icon.textContent = dark ? "☾" : "☀";
+        }
+
+        // load saved or system preference
+        (function initTheme() {
+          let theme = null;
+          try {
+            theme = localStorage.getItem("ayiness-theme");
+          } catch (e) {}
+          if (!theme) {
+            const prefersDark = window.matchMedia(
+              "(prefers-color-scheme: dark)",
+            ).matches;
+            theme = prefersDark ? "dark" : "light";
+          }
+          applyTheme(theme === "dark");
+        })();
+
+        toggle.addEventListener("click", function () {
+          const next = !isDark();
+          applyTheme(next);
+        });
+
+        function resize() {
+          w = canvas.width = window.innerWidth;
+          h = canvas.height = window.innerHeight;
+          // reposition blobs to stay within new viewport
+          for (const b of blobs) {
+            if (b.x > w) b.x = w * 0.85;
+            if (b.y > h) b.y = h * 0.85;
+          }
+        }
+        window.addEventListener("resize", resize);
+        resize();
+
+        // Soft drifting blobs — stackinfolio-style liquid orbs
+        function blobPalette() {
+          const t = isDark() ? 1 : 0;
+          // each blob: { r, vx, vy, x, y, color (rgba string), blur }
+          const palettes = [
+            // light mode — subtle cool tints over #fafafa
+            [
+              { color: "rgba(99, 102, 241, 0.10)", blur: 140, scale: 1.0 },
+              { color: "rgba(139, 92, 246, 0.08)", blur: 160, scale: 0.85 },
+              { color: "rgba(56, 189, 248, 0.07)", blur: 150, scale: 0.7 },
+              { color: "rgba(167, 139, 250, 0.06)", blur: 170, scale: 0.65 },
+            ],
+            // dark mode — soft luminous orbs over #111111
+            [
+              { color: "rgba(129, 140, 248, 0.16)", blur: 150, scale: 1.0 },
+              { color: "rgba(165, 180, 252, 0.13)", blur: 170, scale: 0.8 },
+              { color: "rgba(103, 232, 249, 0.10)", blur: 160, scale: 0.7 },
+              { color: "rgba(196, 181, 253, 0.11)", blur: 180, scale: 0.6 },
+            ],
+          ];
+          return palettes[t];
+        }
+
+        function initBlobs() {
+          const pal = blobPalette();
+          const count = pal.length;
+          const maxR = Math.min(w, h) * 0.32;
+          blobs = [];
+          for (let i = 0; i < count; i++) {
+            const p = pal[i];
+            const r = maxR * p.scale * (0.8 + Math.random() * 0.4);
+            blobs.push({
+              x: Math.random() * w,
+              y: Math.random() * h,
+              vx: (Math.random() - 0.5) * 0.3,
+              vy: (Math.random() - 0.5) * 0.3,
+              r: r,
+              baseR: r,
+              color: p.color,
+              blur: p.blur,
+              phase: Math.random() * Math.PI * 2,
+              pulseSpeed: 0.0004 + Math.random() * 0.0004,
+              pulseAmp: 0.04 + Math.random() * 0.04,
+            });
+          }
+        }
+        initBlobs();
+
+        function blobColor() {
+          // recompute palette on theme change so we swap colors live
+          const pal = blobPalette();
+          for (let i = 0; i < Math.min(blobs.length, pal.length); i++) {
+            blobs[i].color = pal[i].color;
+          }
+        }
+
+        function drawBlob(x, y, r, color, blur) {
+          ctx.save();
+          ctx.shadowBlur = blur;
+          ctx.shadowColor = color;
+          ctx.fillStyle = color;
+          ctx.beginPath();
+          ctx.arc(x, y, r, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+        }
+
+        function draw() {
+          ctx.clearRect(0, 0, w, h);
+
+          // subtle overall wash matching theme
+          const wash = isDark()
+            ? "rgba(255, 255, 255, 0.010)"
+            : "rgba(0, 0, 0, 0.008)";
+          const grad = ctx.createRadialGradient(
+            w * 0.5,
+            h * 0.45,
+            0,
+            w * 0.5,
+            h * 0.45,
+            w * 0.7,
+          );
+          grad.addColorStop(0, wash);
+          grad.addColorStop(1, "rgba(0,0,0,0)");
+          ctx.fillStyle = grad;
+          ctx.fillRect(0, 0, w, h);
+
+          // blobs — draw larger ones first so smaller sit on top
+          const sorted = blobs.slice().sort((a, b) => b.r - a.r);
+          for (const b of sorted) {
+            drawBlob(b.x, b.y, b.r, b.color, b.blur);
+          }
+        }
+
+        function update() {
+          const time = performance.now();
+          for (const b of blobs) {
+            b.x += b.vx;
+            b.y += b.vy;
+            // gentle breathing
+            b.r =
+              b.baseR *
+              (1 + Math.sin(time * b.pulseSpeed + b.phase) * b.pulseAmp);
+            // wrap around viewport with soft margin so blobs don't pop
+            const margin = b.r + 60;
+            if (b.x < -margin) b.x = w + margin;
+            if (b.x > w + margin) b.x = -margin;
+            if (b.y < -margin) b.y = h + margin;
+            if (b.y > h + margin) b.y = -margin;
+          }
+          draw();
+          raf = requestAnimationFrame(update);
+        }
+        update();
+
+        // repopulate when theme flips so colors match
+        const origApply = applyTheme;
+        applyTheme = function (dark) {
+          origApply(dark);
+          blobColor();
+        };
+        toggle.addEventListener("click", function () {
+          // already handled above via applyTheme wrapper
+        });
+
+        document.addEventListener("visibilitychange", () => {
+          if (document.hidden) {
+            if (raf) cancelAnimationFrame(raf);
+            raf = null;
+          } else if (!raf) {
+            raf = requestAnimationFrame(update);
+          }
+        });
+
+        // re-init on resize if viewport changes a lot
+        let lastW = w,
+          lastH = h;
+        window.addEventListener("resize", function () {
+          if (Math.abs(lastW - w) > 120 || Math.abs(lastH - h) > 120) {
+            initBlobs();
+            lastW = w;
+            lastH = h;
+          }
+        });
+      })();
+    </script>
   </body>
 </html>
